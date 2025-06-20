@@ -51,4 +51,22 @@ func main() {
 	default:
 		fmt.Println("Invalid temperature")
 	}
+
+	whoAmI := func(i any) {
+		switch i.(type) {
+		case int:
+			fmt.Println("I am an integer")
+		case string:
+			fmt.Println("I am a string")
+		case bool:
+			fmt.Println("I am a boolean")
+		default:
+			fmt.Println("other type")
+		}
+	}
+
+	whoAmI(42)
+	whoAmI("Hello")
+	whoAmI(true)
+	whoAmI(3.14)
 }

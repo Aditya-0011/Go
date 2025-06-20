@@ -15,4 +15,7 @@ func main() {
 
 	var numbers = [5]int{1, 2, 3, 4, 5}
 	fmt.Println("Numbers in the array:", numbers)
+
+	nums := [2][2]int{{1, 2}, {3, 4}}
+	fmt.Println("2D Array:", nums)
 }

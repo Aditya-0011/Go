@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"slices"
+)
 
 func main() {
 	number := []int{1, 2, 3, 4, 5}
@@ -9,7 +12,6 @@ func main() {
 	fmt.Println("Numbers:", number)
 	fmt.Println("Numbers Length:", len(number))
 	fmt.Println("Numbers Capacity:", cap(number))
-
 
 	name := []string{}
 
@@ -23,4 +25,13 @@ func main() {
 	fmt.Println("Animals:", animals)
 	fmt.Println("Animals Length:", len(animals))
 	fmt.Println("Animals Capacity:", cap(animals))
+
+	a := []int{1, 2, 3, 4, 5}
+	b := make([]int, len(a))
+	copy(b, a)
+	fmt.Println("Slice a:", a)
+	fmt.Println("Slice b:", b)
+
+	c := []int{1, 2, 3, 4, 5}
+	fmt.Println("Slic c is same as a?", slices.Equal(c, a))
 }

@@ -12,4 +12,12 @@ func main() {
 	} else {
 		fmt.Println("x is greater than or equal to 5")
 	}
+
+	if y := 10; y > 5 {
+		fmt.Println("y is greater than 5")
+	} else if y == 5 {
+		fmt.Println("y is equal to 5")
+	} else {
+		fmt.Println("y is not greater than 5")
+	}
 }

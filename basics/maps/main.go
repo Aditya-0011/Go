@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"maps"
+)
 
 func main() {
 	studentMarks := make(map[string]int)
@@ -31,5 +34,14 @@ func main() {
 	for key, value := range person {
 		fmt.Printf("%s: %s\n", key, value)
 	}
+	clear(studentMarks)
+	fmt.Println("Student Marks after clearing:", studentMarks)
+
+	m1 := map[string]string{"name": "Alice", "age": "30", "country": "USA"}
+	m2 := map[string]string{"name": "Alice", "age": "30", "country": "USA"} //map[string]string{"name": "Bob", "age": "25", "country": "Canada"}
+	fmt.Println("Map 1 equals Map 2?:", maps.Equal(m1, m2))
+
+	m3 := maps.Clone(m1)
+	fmt.Println("Cloned Map:", m3)
 
 }
