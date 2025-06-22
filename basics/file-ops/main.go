@@ -1,107 +1,135 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io"
 	"os"
 )
 
-func createFile(fileName string) (*os.File, error) {
-	file, err := os.Create(fileName)
+func example1() {
+	file, err := os.Open("example.txt")
 	if err != nil {
-		return nil, err
-	}
-	return file, nil
-}
-
-func writeToFile(file *os.File, content string) error {
-	byte, err := io.WriteString(file, content+"\n")
-	if err != nil {
-		return err
-	}
-	fmt.Printf("Wrote %d bytes to file.\n", byte)
-	return nil
-}
-
-func createAndWriteFile(fileName string) {
-	file, err := createFile(fileName)
-
-	if err != nil {
-		fmt.Println("Error creating file:", err)
-		return
+		panic(err)
 	}
 	defer file.Close()
 
-	fmt.Println("File created successfully:", file.Name())
-
-	err = writeToFile(file, "Hello, World!")
+	info, err := file.Stat()
 	if err != nil {
-		fmt.Println("Error writing to file:", err)
-		return
+		panic(err)
 	}
 
-	fmt.Println("'Hello, World!' written to file successfully.")
-
-	err = writeToFile(file, "More Data!")
-	if err != nil {
-		fmt.Println("Error writing to file:", err)
-		return
-	}
-
-	fmt.Println("'More Data!' written to file successfully.")
+	fmt.Println("File name:", info.Name())
+	fmt.Println("File size:", info.Size())
+	fmt.Println("File mode:", info.Mode())
+	fmt.Println("Last modified:", info.ModTime())
+	fmt.Println("Is directory:", info.IsDir())
+	fmt.Println("System interface:", info.Sys())
 }
 
-func openReadOnlyFileUsingBuffer(fileName string) {
-	file, err := os.Open(fileName)
+func example2() {
+	file, err := os.Open("example.txt")
 	if err != nil {
-		fmt.Println("Error opening file:", err)
-		return
+		panic(err)
 	}
 	defer file.Close()
 
-	buffer := make([]byte, 1024)
+	buffer := make([]byte, 12)
 
 	for {
-		data, err := file.Read(buffer)
+		i, err := file.Read(buffer)
 		if err == io.EOF {
 			return
 		} else if err != nil {
 			fmt.Println("Error reading file:", err)
 			return
 		}
-		fmt.Println("Read data:", string(buffer[:data]))
+		fmt.Println("Read data:", string(buffer[:i]))
 	}
 }
 
-func openReadOnlyFileUsingOs(fileName string) {
-	data, err := os.ReadFile(fileName)
+func example3() {
+	file, err := os.ReadFile("example.txt")
 	if err != nil {
-		fmt.Println("Error reading file:", err)
-		return
+		panic(err)
 	}
-	fmt.Println("File content:", string(data))
+
+	fmt.Println("File content:", string(file))
 }
 
-func openAndEditFile(fileName string) {
-	file, err := os.OpenFile(fileName, os.O_APPEND|os.O_WRONLY, 0644) // linux chmod 644
+func example4() {
+	dir, err := os.Open("..")
 	if err != nil {
-		fmt.Println("Error opening file for editing:", err)
+		panic(err)
+	}
+	defer dir.Close()
+
+	info, err := dir.ReadDir(-1)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, i := range info {
+		fmt.Println("Name:", i.Name())
+		fmt.Println("Is Directory:", i.IsDir())
+	}
+}
+
+func example5() {
+	file, err := os.Create("file.txt")
+	if err != nil {
+		panic(err)
 	}
 	defer file.Close()
 
-	err = writeToFile(file, "Some more Data!")
+	//file.WriteString("Hello, World!\n")
+	bytes := []byte("Hello, World!\n")
+	_, err = file.Write(bytes)
 	if err != nil {
-		fmt.Println("Error writing to file:", err)
-		return
+		panic(err)
+	}
+}
+
+func example6() {
+	source, err := os.Open("example.txt")
+	if err != nil {
+		panic(err)
+	}
+	defer source.Close()
+
+	dest, err := os.Create("dest.txt")
+	if err != nil {
+		panic(err)
+	}
+	defer dest.Close()
+
+	reader := bufio.NewReader(source)
+	writer := bufio.NewWriter(dest)
+
+	for {
+		b, err := reader.ReadByte()
+		if err != nil {
+			if err.Error() != "EOF" {
+				panic(err)
+			}
+			break
+		}
+
+		err = writer.WriteByte(b)
+		if err != nil {
+			panic(err)
+		}
+
 	}
 
-	fmt.Println("'Some more Data!' written to file successfully.")
+	writer.Flush()
 }
 
 func main() {
-	//createAndWriteFile("example.txt")
-	//openReadOnlyFileUsingBuffer("example.txt")
-	openReadOnlyFileUsingOs("example.txt")
-	openAndEditFile("example.txt")
-	openReadOnlyFileUsingOs("example.txt")
+	// example1()
+	// example2()
+	// example3()
+	// example4()
+	// example5()
+	// example6()
 }

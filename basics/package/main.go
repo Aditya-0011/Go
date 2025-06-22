@@ -1,7 +1,11 @@
 package main
 
-import "package/utils"
+import (
+	"package/utils"
+	"strconv"
+)
 
 func main() {
-	utils.PrintMessage("Hello, World!")
+	random := utils.RandomInt(15)
+	utils.PrintMessage("Random number: ", strconv.Itoa(random))
 }

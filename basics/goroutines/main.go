@@ -15,9 +15,24 @@ func sayHi() {
 	fmt.Println("Hi, there!")
 }
 
-func main() {
+func example1() {
 	go sayHello()
 	go sayHi()
 
 	time.Sleep(800 * time.Millisecond)
+}
+
+func task(id int) {
+	fmt.Println("Completed task", id)
+}
+
+func main() {
+	for i := range 10 {
+		//go task(i)
+		go func(i int) {
+			fmt.Println("Completed task", i)
+		}(i)
+	}
+
+	time.Sleep(time.Second * 2)
 }

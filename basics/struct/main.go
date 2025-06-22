@@ -8,6 +8,14 @@ type Person struct {
 	Age       int
 }
 
+func (p *Person) changeAge(age int) {
+	p.Age = age
+}
+
+func (p Person) fullName() string {
+	return p.FirstName + " " + p.LastName
+}
+
 type Contact struct {
 	Email string
 	Phone string
@@ -19,9 +27,19 @@ type Address struct {
 	State  string
 }
 
+func newAddress(street, city, state string) *Address {
+	address := Address{
+		Street: street,
+		City:   city,
+		State:  state,
+	}
+
+	return &address
+}
+
 type Employee struct {
-	Person  Person
-	Contact Contact
+	Person
+	Contact
 	Address Address
 }
 
@@ -65,4 +83,17 @@ func main() {
 	fmt.Println("Person:", employee.Person)
 	fmt.Println("Contact:", employee.Contact)
 	fmt.Println("Address:", employee.Address)
+
+	employee.Person.changeAge(45)
+	fmt.Println("Updated Employee Age:", employee.Person.Age)
+	fmt.Println("Full Name:", employee.Person.fullName())
+
+	address := newAddress("456 Elm Street", "Othertown", "NY")
+	fmt.Println("New Address:", *address)
+
+	country := struct {
+		name    string
+		capital string
+	}{"Wonderland", "Wonder City"}
+	fmt.Println("Country:", country)
 }
