@@ -7,12 +7,8 @@ import (
 	"api/src/models"
 )
 
-type TodoResponse struct {
-	Msg string `json:"msg"`
-}
-
 type GetTodosResponse struct {
-	Todos []models.Todo `json:"todos"`
+	Todos []models.Todo `json:"data"`
 }
 
 type CreateTodoRequest struct {
@@ -20,12 +16,12 @@ type CreateTodoRequest struct {
 	Done  bool   `json:"done"`
 }
 
-func (c CreateTodoRequest) Validate() error {
-	c.Title = strings.TrimSpace(c.Title)
-	if c.Title == "" {
+func (r CreateTodoRequest) Validate() error {
+	r.Title = strings.TrimSpace(r.Title)
+	if r.Title == "" {
 		return errors.New("title cannot be empty")
 	}
-	if len(c.Title) < 3 || len(c.Title) > 100 {
+	if len(r.Title) < 3 || len(r.Title) > 100 {
 		return errors.New("title must be between 3 and 100 characters")
 	}
 	return nil
@@ -37,18 +33,19 @@ type UpdateTodoRequest struct {
 	Done  *bool   `json:"done,omitempty"`
 }
 
-func (u UpdateTodoRequest) Validate() error {
-	if u.Id <= 0 {
+func (r UpdateTodoRequest) Validate() error {
+	if r.Id <= 0 {
 		return errors.New("invalid id")
 	}
-	if u.Title != nil {
-		t := strings.TrimSpace(*u.Title)
+	if r.Title != nil {
+		t := strings.TrimSpace(*r.Title)
 		if t == "" {
 			return errors.New("title cannot be empty")
 		}
 		if len(t) > 100 {
 			return errors.New("title too long (max 100 chars)")
 		}
+		*r.Title = t
 	}
 	return nil
 }

@@ -1,26 +1,48 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
 
-	"api/src/http/handlers"
+	"api/src/config"
+	"api/src/http/middlewares"
 	"api/src/http/routers"
 	"api/src/storage"
+	"api/src/utils"
 )
 
 func main() {
-	db, err := storage.InitDB("todos.db")
+	cfg := config.LoadConfig()
+
+	db, err := storage.InitDB(cfg.DBPath)
 	if err != nil {
 		log.Fatal(err)
 	}
-	defer db.Close()
 
-	handler := &handlers.Handler{DB: db}
+	router := routers.RootRouter(db)
 
-	router := routers.TodoRouter(handler)
+	app := middlewares.AddMiddlewares(router, middlewares.Logger)
 
-	fmt.Println("Starting server on :8080")
-	log.Fatal(http.ListenAndServe(":8080", router))
+	server := &http.Server{
+		Addr:    fmt.Sprintf(":%s", cfg.Port),
+		Handler: app,
+	}
+
+	sm := utils.NewShutdownManager()
+
+	sm.Register(func(ctx context.Context) error {
+		fmt.Println("🔒 Closing database connection...")
+		return db.Close()
+	})
+
+	go func() {
+		fmt.Printf("🚀 Starting server on: %s\n", cfg.Port)
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("❌ Server error: %v\n", err)
+		}
+	}()
+
+	sm.WaitAndShutdown(server.Shutdown)
 }
